@@ -12,8 +12,8 @@
 
 #include "ImageReader.hpp"
 #include "QtOpencvCore.hpp"
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 
 class MainWindow : public QMainWindow
@@ -49,6 +49,7 @@ private:
     
     QPushButton *pbOpenImage;
     QPushButton *pbRemoveSeams;
+    QPushButton *pbDoubleSeams;
     QPushButton *pbComputeSeams;
     
     QLabel      *lCaption;

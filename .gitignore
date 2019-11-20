@@ -31,5 +31,14 @@
 *.out
 *.app
 
+# QMake
+*.qmake.stash
+*.pro.user
+
+# moc
+moc_*
+
 # Others
 .directory
+SeamCarving
+

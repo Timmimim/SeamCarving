@@ -115,6 +115,10 @@ void MainWindow::setupUi()
     pbRemoveSeams = new QPushButton(QString("Remove Seams"), centralWidget);
     pbRemoveSeams->setEnabled(false);
     verticalLayout->addWidget(pbRemoveSeams);
+
+    pbDoubleSeams = new QPushButton(QString("Double Seams"), centralWidget);
+    pbDoubleSeams->setEnabled(false);
+    verticalLayout->addWidget(pbDoubleSeams);
     
     verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     verticalLayout->addItem(verticalSpacer);

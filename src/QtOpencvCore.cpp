@@ -9,14 +9,14 @@ namespace QtOpencvCore
          // convert the color to RGB (OpenCV uses BGR)
          switch (img.type()) {
          case CV_8UC1:
-            cv::cvtColor(img, img, CV_GRAY2RGB);
+            cv::cvtColor(img, img, cv::COLOR_GRAY2RGB);
             qimage = QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
-            cv::cvtColor(img, img, CV_RGB2GRAY);
+            cv::cvtColor(img, img, cv::COLOR_RGB2GRAY);
             break;
          case CV_8UC3:
-            cv::cvtColor(img, img, CV_BGR2RGB);
+            cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
             qimage = QImage((uchar*) img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
-            cv::cvtColor(img, img, CV_RGB2BGR);
+            cv::cvtColor(img, img, cv::COLOR_RGB2BGR);
             break;
          }
 
