@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QCheckBox>
 #include <QBoxLayout>
 #include <QSpinBox>
 #include <QLabel>
@@ -34,6 +35,7 @@ private slots:
     void on_pbOpenImage_clicked();
     void on_pbComputeSeams_clicked();
     void on_pbRemoveSeams_clicked();
+    void on_pbDoubleSeams_clicked();
     
 private:
 
@@ -50,7 +52,9 @@ private:
     QPushButton *pbOpenImage;
     QPushButton *pbRemoveSeams;
     QPushButton *pbDoubleSeams;
+
     QPushButton *pbComputeSeams;
+    QCheckBox   *cbShowSeams;
     
     QLabel      *lCaption;
     QLabel      *lCols;

@@ -64,15 +64,20 @@ void MainWindow::on_pbRemoveSeams_clicked()
     /* .............. */
 }
 
+void MainWindow::on_pbDoubleSeams_clicked()
+{
+
+}
+
 void MainWindow::setupUi()
 {
     /* Boilerplate code */
     /*********************************************************************************************/
-    resize(129, 211);
+    resize(180, 260);
     QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizePolicy(sizePolicy);
-    setMinimumSize(QSize(129, 211));
-    setMaximumSize(QSize(129, 211));
+    setMinimumSize(QSize(180, 260));
+    setMaximumSize(QSize(180, 260));
     centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString("centralWidget"));
     
@@ -84,7 +89,7 @@ void MainWindow::setupUi()
     
     
     verticalLayout_3 = new QVBoxLayout();
-    lCaption = new QLabel(QString("Remove"), centralWidget);
+    lCaption = new QLabel(QString("#Pixels to Remove/Add:"), centralWidget);
     lCaption->setEnabled(false);
     verticalLayout_3->addWidget(lCaption);
     
@@ -111,6 +116,10 @@ void MainWindow::setupUi()
     pbComputeSeams = new QPushButton(QString("Compute Seams"), centralWidget);
     pbComputeSeams->setEnabled(false);
     verticalLayout->addWidget(pbComputeSeams);
+
+    cbShowSeams = new QCheckBox(QString("Show Seams in Original"), centralWidget);
+    cbShowSeams->setEnabled(false);
+    verticalLayout->addWidget(cbShowSeams);
     
     pbRemoveSeams = new QPushButton(QString("Remove Seams"), centralWidget);
     pbRemoveSeams->setEnabled(false);
@@ -147,7 +156,9 @@ void MainWindow::enableGUI()
     sbRows->setEnabled(true);
     
     pbComputeSeams->setEnabled(true);
+    cbShowSeams->setEnabled(true);
     pbRemoveSeams->setEnabled(true);
+    pbDoubleSeams->setEnabled(true);
     
     sbRows->setMinimum(0);
     sbRows->setMaximum(originalImage.rows);
@@ -169,5 +180,7 @@ void MainWindow::disableGUI()
     sbRows->setEnabled(false);
     
     pbComputeSeams->setEnabled(false);
+    cbShowSeams->setEnabled(false);
     pbRemoveSeams->setEnabled(false);
+    pbDoubleSeams->setEnabled(false);
 }
