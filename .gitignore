@@ -41,4 +41,6 @@ moc_*
 # Others
 .directory
 SeamCarving
+.idea
+Makefile
 
