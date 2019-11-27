@@ -13,6 +13,7 @@
 
 #include "ImageReader.hpp"
 #include "QtOpencvCore.hpp"
+#include "EnergyFunctions.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 

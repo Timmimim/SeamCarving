@@ -13,15 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+        EnergyFunctions.cpp \
         MainWindow.cpp \
         ImageReader.cpp \
-        QtOpencvCore.cpp \
-    energyfunctions.cpp
+        QtOpencvCore.cpp
 
 HEADERS  += MainWindow.hpp \
+        EnergyFunctions.hpp \
         ImageReader.hpp \
-        QtOpencvCore.hpp \
-    energyfunctions.hpp
+        QtOpencvCore.hpp
 
 FORMS    +=
 

@@ -9,7 +9,6 @@
 class ImageReader
 {
 public:
-    
     static cv::Mat readImage(const std::string& filePath);
 };
 

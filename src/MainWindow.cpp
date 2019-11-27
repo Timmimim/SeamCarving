@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    static EnergyFunctions energy;
     /* Initialisiere die UI Komponenten */
     setupUi();
 }
