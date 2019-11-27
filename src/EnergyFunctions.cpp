@@ -32,20 +32,23 @@ EnergyFunctions::EnergyFunctions()
 
 }
 
+cv::Mat EnergyFunctions::convertToGrayscale(const cv::Mat &image){
+    // TODO
+}
+
 cv::Mat EnergyFunctions::foldWithHorizontalOperator(const cv::Mat& image, const int choiceOperator)
 {
     cv::Mat energyField = image.clone();
     int *horizontalOperator;
     int *verticalOperator;
 
+    // Choice of operator in accordance with the enum listing the available operator implementations
     switch (choiceOperator) {
-    case 1:
+    case 1: // Sobel
         horizontalOperator = *EnergyFunctions::horizontalSobelOperator;
-        verticalOperator = *EnergyFunctions::verticalSobelOperator;
         break;
-    case 2:
+    case 2: // Previtt
         horizontalOperator = *EnergyFunctions::horizontalPrevittOperator;
-        verticalOperator = *EnergyFunctions::verticalPrevittOperator;
         break;
     default:
         std::cout << "ERROR: Operator not defined, unable to compute energy. Good-Bye.";
@@ -68,5 +71,31 @@ cv::Mat EnergyFunctions::foldWithHorizontalOperator(const cv::Mat& image, const 
 cv::Mat EnergyFunctions::foldWithVerticalOperator(const cv::Mat& image, const int choiceOperator)
 {
     cv::Mat energyField = image.clone();
+    int *horizontalOperator;
+    int *verticalOperator;
+
+    // Choice of operator in accordance with the enum listing the available operator implementations
+    switch (choiceOperator) {
+    case 1: // Sobel
+        verticalOperator = *EnergyFunctions::verticalSobelOperator;
+        break;
+    case 2: // Previtt
+        verticalOperator = *EnergyFunctions::verticalPrevittOperator;
+        break;
+    default:
+        std::cout << "ERROR: Operator not defined, unable to compute energy. Good-Bye.";
+        break;
+    }
+
+    for(int row = 0; row < image.rows; row++)
+    {
+        for(int col = 0; col < image.cols; col++)
+        {
+            if (col == 0 || col == image.rows-1) {
+                //energyField[row][col] = 0;
+            }
+
+        }
+    }
 }
 

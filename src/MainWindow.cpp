@@ -75,11 +75,11 @@ void MainWindow::setupUi()
 {
     /* Boilerplate code */
     /*********************************************************************************************/
-    resize(180, 300);
+    resize(260, 330);
     QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizePolicy(sizePolicy);
-    setMinimumSize(QSize(180, 300));
-    setMaximumSize(QSize(180, 300));
+    setMinimumSize(QSize(260, 330));
+    setMaximumSize(QSize(260, 330));
     centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString("centralWidget"));
     
