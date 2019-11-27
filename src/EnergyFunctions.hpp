@@ -11,17 +11,14 @@ class EnergyFunctions
 public:
     EnergyFunctions();
 
-    static cv::Mat foldWithHorizontalSobel(cv::Mat *image, cv::Mat *energyField);
-    static cv::Mat foldWithVerticalSobel(cv::Mat *image, cv::Mat *energyField);
-
-    static cv::Mat foldWithHorizontalFancyShit(cv::Mat *image, cv::Mat *energyField);
-    static cv::Mat foldWithVerticalFancyShit(cv::Mat *image, cv::Mat *energyField);
+    static cv::Mat foldWithHorizontalOperator(const cv::Mat& image, const int choiceOperator);
+    static cv::Mat foldWithVerticalOperator(const cv::Mat& image, const int choiceOperator);
 
 private:
-    char horizontalSobelOperator[3][3];
-    char verticalSobelOperator[3][3];
-
-
+    static int horizontalSobelOperator[3][3];
+    static int verticalSobelOperator[3][3];
+    static int horizontalPrevittOperator[3][3];
+    static int verticalPrevittOperator[3][3];
 };
 
 #endif // ENERGYFUNCTIONS_HPP

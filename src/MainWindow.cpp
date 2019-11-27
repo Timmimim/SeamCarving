@@ -39,6 +39,7 @@ void MainWindow::on_pbOpenImage_clicked()
             enableGUI();
             
             /* ...zeige das Originalbild in einem separaten Fenster an */
+            cv::namedWindow("Original Image", cv::WINDOW_KEEPRATIO);
             cv::imshow("Original Image", originalImage); 
         }
         else
@@ -67,18 +68,18 @@ void MainWindow::on_pbRemoveSeams_clicked()
 
 void MainWindow::on_pbDoubleSeams_clicked()
 {
-
+    /* .............. */
 }
 
 void MainWindow::setupUi()
 {
     /* Boilerplate code */
     /*********************************************************************************************/
-    resize(180, 260);
+    resize(180, 300);
     QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizePolicy(sizePolicy);
-    setMinimumSize(QSize(180, 260));
-    setMaximumSize(QSize(180, 260));
+    setMinimumSize(QSize(180, 300));
+    setMaximumSize(QSize(180, 300));
     centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString("centralWidget"));
     
@@ -114,6 +115,16 @@ void MainWindow::setupUi()
     verticalLayout_3->addLayout(horizontalLayout_2);
     verticalLayout->addLayout(verticalLayout_3);
     
+    horizontalLayout_4 = new QHBoxLayout();
+    comboOperator = new QComboBox(centralWidget);
+    comboOperator->setObjectName(QString("operatorChoice"));
+    comboOperator->setEnabled(false);
+    comboCaption = new QLabel(QString("Choose Energy Operator"), centralWidget);
+    comboCaption->setEnabled(false);
+    horizontalLayout_4->addWidget(comboCaption);
+    horizontalLayout_4->addWidget(comboOperator);
+    verticalLayout->addLayout(horizontalLayout_4);
+
     pbComputeSeams = new QPushButton(QString("Compute Seams"), centralWidget);
     pbComputeSeams->setEnabled(false);
     verticalLayout->addWidget(pbComputeSeams);
@@ -155,7 +166,10 @@ void MainWindow::enableGUI()
     
     sbCols->setEnabled(true);
     sbRows->setEnabled(true);
-    
+
+    comboCaption->setEnabled(true);
+    comboOperator->setEnabled(true);
+
     pbComputeSeams->setEnabled(true);
     cbShowSeams->setEnabled(true);
     pbRemoveSeams->setEnabled(true);
@@ -179,6 +193,9 @@ void MainWindow::disableGUI()
     
     sbCols->setEnabled(false);
     sbRows->setEnabled(false);
+
+    comboCaption->setEnabled(false);
+    comboOperator->setEnabled(false);
     
     pbComputeSeams->setEnabled(false);
     cbShowSeams->setEnabled(false);

@@ -9,6 +9,7 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QGroupBox>
+#include <QComboBox>
 #include <QStatusBar>
 
 #include "ImageReader.hpp"
@@ -47,6 +48,7 @@ private:
     QHBoxLayout *horizontalLayout;
     QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *horizontalLayout_3;
+    QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout;
     QVBoxLayout *verticalLayout_3;
     
@@ -56,8 +58,10 @@ private:
 
     QPushButton *pbComputeSeams;
     QCheckBox   *cbShowSeams;
-    
+    QComboBox   *comboOperator;
+
     QLabel      *lCaption;
+    QLabel      *comboCaption;
     QLabel      *lCols;
     QLabel      *lRows;
     
