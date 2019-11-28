@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         EnergyFunctions.cpp \
         MainWindow.cpp \
         ImageReader.cpp \
-        QtOpencvCore.cpp
+        QtOpencvCore.cpp \
+    seams.cpp
 
 HEADERS  += MainWindow.hpp \
         EnergyFunctions.hpp \
         ImageReader.hpp \
-        QtOpencvCore.hpp
+        QtOpencvCore.hpp \
+    seams.h
 
 FORMS    +=
 
