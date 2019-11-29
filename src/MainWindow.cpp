@@ -58,7 +58,10 @@ void MainWindow::on_pbComputeSeams_clicked()
     /* Anzahl der Zeilen, die entfernt werden sollen */
     int rowsToRemove = sbRows->value();
     
-    /* .............. */
+    cv::Mat grayscaleImage = EnergyFunctions::convertToGrayscale(originalImage);
+    cv::Mat energyImage = EnergyFunctions::computeEnergy(grayscaleImage, comboChooseOperator->currentIndex());
+    cv::namedWindow("Energy Image", cv::WINDOW_KEEPRATIO);
+    cv::imshow("Energy Image", energyImage);
 }
 
 void MainWindow::on_pbRemoveSeams_clicked()
@@ -116,13 +119,17 @@ void MainWindow::setupUi()
     verticalLayout->addLayout(verticalLayout_3);
     
     horizontalLayout_4 = new QHBoxLayout();
-    comboOperator = new QComboBox(centralWidget);
-    comboOperator->setObjectName(QString("operatorChoice"));
-    comboOperator->setEnabled(false);
+    comboChooseOperator = new QComboBox(centralWidget);
     comboCaption = new QLabel(QString("Choose Energy Operator"), centralWidget);
     comboCaption->setEnabled(false);
+    comboChooseOperator->setObjectName(QString("operatorChoice"));
+    comboChooseOperator->setEnabled(false);
+
+    operatorChoices = QStringList() << tr("Sobel") << tr("Previtt");
+    comboChooseOperator->addItems(operatorChoices);
+
     horizontalLayout_4->addWidget(comboCaption);
-    horizontalLayout_4->addWidget(comboOperator);
+    horizontalLayout_4->addWidget(comboChooseOperator);
     verticalLayout->addLayout(horizontalLayout_4);
 
     pbComputeSeams = new QPushButton(QString("Compute Seams"), centralWidget);
@@ -168,7 +175,7 @@ void MainWindow::enableGUI()
     sbRows->setEnabled(true);
 
     comboCaption->setEnabled(true);
-    comboOperator->setEnabled(true);
+    comboChooseOperator->setEnabled(true);
 
     pbComputeSeams->setEnabled(true);
     cbShowSeams->setEnabled(true);
@@ -195,7 +202,7 @@ void MainWindow::disableGUI()
     sbRows->setEnabled(false);
 
     comboCaption->setEnabled(false);
-    comboOperator->setEnabled(false);
+    comboChooseOperator->setEnabled(false);
     
     pbComputeSeams->setEnabled(false);
     cbShowSeams->setEnabled(false);

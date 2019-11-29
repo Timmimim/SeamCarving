@@ -58,7 +58,9 @@ private:
 
     QPushButton *pbComputeSeams;
     QCheckBox   *cbShowSeams;
-    QComboBox   *comboOperator;
+    QComboBox   *comboChooseOperator;
+
+    QStringList operatorChoices;
 
     QLabel      *lCaption;
     QLabel      *comboCaption;

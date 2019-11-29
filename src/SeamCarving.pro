@@ -38,7 +38,7 @@ win32 {
 
 unix {
 
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -pedantic -Wno-unknown-pragmas
+    QMAKE_CXXFLAGS += -std=c++17 -Wall -pedantic -Wno-unknown-pragmas
 
     INCLUDEPATH += /usr/include/opencv4 /usr/include/opencv4/opencv2 /usr/local/include/opencv4 /usr/local/include/opencv4/opencv2
 
