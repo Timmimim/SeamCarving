@@ -4,6 +4,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     static EnergyFunctions energy;
+    static Seams seams;
     /* Initialisiere die UI Komponenten */
     setupUi();
 }
@@ -62,6 +63,12 @@ void MainWindow::on_pbComputeSeams_clicked()
     cv::Mat energyImage = EnergyFunctions::computeEnergy(grayscaleImage, comboChooseOperator->currentIndex());
     cv::namedWindow("Energy Image", cv::WINDOW_KEEPRATIO);
     cv::imshow("Energy Image", energyImage);
+
+    /**
+    int *seamuelLJackson;
+    seamuelLJackson = Seams::horizontalSeam(energyImage);
+    std::cout << &seamuelLJackson[0] << &seamuelLJackson[1] << &seamuelLJackson[2] << &seamuelLJackson[3] << &seamuelLJackson[4] << &seamuelLJackson[5] << &seamuelLJackson[6] << &seamuelLJackson[7] << std::endl;
+    */
 }
 
 void MainWindow::on_pbRemoveSeams_clicked()

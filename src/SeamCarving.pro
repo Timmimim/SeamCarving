@@ -17,13 +17,13 @@ SOURCES += main.cpp\
         MainWindow.cpp \
         ImageReader.cpp \
         QtOpencvCore.cpp \
-    seams.cpp
+    Seams.cpp
 
 HEADERS  += MainWindow.hpp \
         EnergyFunctions.hpp \
         ImageReader.hpp \
         QtOpencvCore.hpp \
-    seams.h
+    Seams.h
 
 FORMS    +=
 

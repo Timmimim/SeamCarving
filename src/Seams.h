@@ -5,10 +5,10 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-class seams
+class Seams
 {
 public:
-    seams();
+    Seams();
     static int* horizontalSeam(const cv::Mat& energyImage);
     static int* verticalSeam(const cv::Mat& energyImage);
 };

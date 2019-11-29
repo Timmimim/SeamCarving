@@ -1,11 +1,12 @@
-#include "seams.h"
+#include "Seams.h"
+#include <iostream>
 
-seams::seams()
+Seams::Seams()
 {
 
 }
 
-int* seams::horizontalSeam(const cv::Mat& energyImage)
+int* Seams::horizontalSeam(const cv::Mat& energyImage)
 {
     const int n = energyImage.rows;
     const int m = energyImage.cols;
@@ -56,21 +57,24 @@ int* seams::horizontalSeam(const cv::Mat& energyImage)
     for(int j = m-2; j > -1; j--)
     {
         //vorige Spalte, gleiche Reihe (Basiswahl)
+        std::cout << si+1 << std::endl;
         seam[j] = si;
         s = M[si][j];
 
         //vorige Spalte, eine Reihe hoch
         //Indexrange beachten und Vergleich
-        if(si-1 > -1 && M[si-1][j] < s)
+        if((si-1 > -1) && (M[si-1][j] < s))
         {
+            std::cout << si+1 << std::endl;
             seam[j] = si-1;
             s = M[si-1][j];
         }
 
         //vorige Spalte, eine Reihe runter
         //Indexrange beachten und Vergleich
-        if(si+1 < n && M[si+1][j] < s)
+        if((si+1 < n) && (M[si+1][j] < s))
         {
+            std::cout << si+1 << std::endl;
             seam[j] = si+1;
             s = M[si+1][j];
         }
@@ -79,7 +83,7 @@ int* seams::horizontalSeam(const cv::Mat& energyImage)
     return seam;
 }
 
-int* seams::verticalSeam(const cv::Mat& energyImage)
+int* Seams::verticalSeam(const cv::Mat& energyImage)
 {
 
     const int n = energyImage.rows;
@@ -96,7 +100,7 @@ int* seams::verticalSeam(const cv::Mat& energyImage)
     //Sonderfall am Rand von M, da j-1 < 0 bzw j+1 = m sein kann (index out of bounce stuff)
     for(int i=1; i<n; i++)
     {
-        //Sondefall j-1 zu klein
+        //Sonderfall j-1 zu klein
         M[i][0] = energyImage.at<int>(i,0) +
                 std::min(M[i-1][0],M[i-1][1]);
         //Standard (alle drei benachbarten Pixel in Reihe i-1 kommen in betracht)

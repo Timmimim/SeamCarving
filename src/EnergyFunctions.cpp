@@ -160,7 +160,7 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
 
                     // Calculate mere sum of absolute gradient values;
                     // Scale down to [0, max(uchar)] by deviding the sum by 2 (combined division by 6)
-                    energyField.at<uchar>(row,col) = static_cast<uchar>((std::abs(horizontalDerivative) + std::abs(verticalDerivative)) / 5);
+                    energyField.at<uchar>(row,col) = static_cast<uchar>((std::abs(horizontalDerivative) + std::abs(verticalDerivative)) / 6);
               }
             }
         });
