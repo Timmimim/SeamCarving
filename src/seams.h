@@ -2,6 +2,7 @@
 #define SEAMS_H
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 class seams

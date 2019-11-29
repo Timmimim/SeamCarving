@@ -32,7 +32,7 @@ EnergyFunctions::EnergyFunctions()
 
 }
 
-cv::Mat EnergyFunctions::convertToGrayscale(const cv::Mat &image){
+cv::Mat EnergyFunctions::convertToGrayscale(const cv::Mat& image){
     // TODO
 }
 
