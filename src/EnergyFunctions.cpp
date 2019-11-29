@@ -93,7 +93,8 @@ cv::Mat EnergyFunctions::convertToGrayscale(const cv::Mat &image)
 
 cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int choiceOperator)
 {
-    cv::Mat energyField = grayscaleImage.clone();
+    auto energyField = grayscaleImage.clone();
+
     int verticalOperator[3][3];
     int horizontalOperator[3][3];
 
@@ -112,7 +113,7 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
         throw std::invalid_argument("Invalid choice of derivation operator.");
     }
 
-    // Perform grayscaling using multi-threading (if available)
+    // Perform derivation using multi-threading (if available)
     // find number of available concurrent threads (returned as uint, convert to int);
     // clamp number of threads to maximum number of rows (more would not make sense)
     auto numThreads = std::clamp(static_cast<int>(std::thread::hardware_concurrency()), 1, grayscaleImage.rows);
@@ -120,7 +121,7 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
     auto threads = std::vector<std::thread>{};
 
     // use threads to perform averaging
-    for(int t = 0; t <= numThreads; ++t)
+    for(int t = 0; t < numThreads; ++t)
     {
         // devide image into segments to be averaged separately in parallel
         // calculate start and end of matrix interval per thread
@@ -128,21 +129,26 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
         int end = grayscaleImage.rows * (t+1) / numThreads;
 
         // start the current thread, add to vector
-        threads.emplace_back([start, end, &grayscaleImage, &energyField, verticalOperator, horizontalOperator] () {
+        threads.emplace_back([start, end, &grayscaleImage, &energyField, &verticalOperator, &horizontalOperator] ()
+        {
+            int verticalDerivative = 0;
+            int horizontalDerivative = 0;
 
-            for(int row = start; row < end; row++)
+            for(int row = start; row < end; ++row)
             {
-                for(int col = 0; col < grayscaleImage.cols; col++)
+                for(int col = 0; col < grayscaleImage.cols; ++col)
                 {
-                    int verticalDerivative = 0;
-                    int horizontalDerivative = 0;
+                    verticalDerivative = 0;
+                    horizontalDerivative = 0;
 
-                    for(int offsetRow = -1; offsetRow <= 1; ++offsetRow)
-                        for(int offsetCol = -1; offsetCol <= 1; ++offsetCol)
+                    for(int offsetRow = 0; offsetRow < 3; ++offsetRow)
+                    {
+                        for(int offsetCol = 0; offsetCol < 3; ++offsetCol)
                         {
-                            verticalDerivative += clampImageBorder<uchar>(grayscaleImage, row + offsetRow, col + offsetCol) * verticalOperator[1+offsetCol][1+offsetRow];
-                            horizontalDerivative += clampImageBorder<uchar>(grayscaleImage, row + offsetRow, col + offsetCol) * horizontalOperator[1+offsetCol][1+offsetRow];
+                            verticalDerivative += verticalOperator[offsetRow][offsetCol] * clampImageBorder<uchar>(grayscaleImage, row + offsetRow-1, col + offsetCol-1) ;
+                            horizontalDerivative += horizontalOperator[offsetRow][offsetCol] * clampImageBorder<uchar>(grayscaleImage, row + offsetRow-1, col + offsetCol-1);
                         }
+                    }
                     // Calculate the gradients via Euclidean norm
                     // Scale to [0, 255] (i.e. [0, max(uchar)]), by dividing gradients by 3, calculating the Euclidean length, and deviding by sqrt(2);
                     // Further clamp result to the interval covered by uchar to prevent over-/underflow due to floating point arithmetic.
@@ -151,20 +157,18 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
                                                                                 + verticalDerivative * verticalDerivative / 9 )   / std::sqrt(2.0),
                                                                         0.0,
                                                                         static_cast<double>(std::numeric_limits<uchar>::max())));
-                    /**
+
                     // Calculate mere sum of absolute gradient values;
                     // Scale down to [0, max(uchar)] by deviding the sum by 2 (combined division by 6)
-                    energyField.at<uchar>(row,col) = static_cast<uchar>((std::abs(verticalDerivative) + std::abs(horizontalDerivative)) / 6);
-                    */
+                    energyField.at<uchar>(row,col) = static_cast<uchar>((std::abs(horizontalDerivative) + std::abs(verticalDerivative)) / 5);
               }
             }
         });
-
-        for (auto& thread : threads){
-            thread.join();
-        }
-
-        return energyField;
     }
+
+    for (auto& thread : threads)
+        thread.join();
+
+    return energyField;
 }
 

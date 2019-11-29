@@ -55,7 +55,7 @@ private:
         auto size = image.size();
         row = std::clamp(row, 0, size.height-1);
         col = std::clamp(col, 0, size.width-1);
-        return image.at<T>(col,row);
+        return image.at<T>(row,col);
     }
 };
 
