@@ -64,11 +64,37 @@ void MainWindow::on_pbComputeSeams_clicked()
     cv::namedWindow("Energy Image", cv::WINDOW_KEEPRATIO);
     cv::imshow("Energy Image", energyImage);
 
-    /**
-    int *seamuelLJackson;
+    int* seamuelLJackson;
     seamuelLJackson = Seams::horizontalSeam(energyImage);
-    std::cout << &seamuelLJackson[0] << &seamuelLJackson[1] << &seamuelLJackson[2] << &seamuelLJackson[3] << &seamuelLJackson[4] << &seamuelLJackson[5] << &seamuelLJackson[6] << &seamuelLJackson[7] << std::endl;
-    */
+    std::cout << "First x rows of found seam:" << std::endl;
+    std::cout << seamuelLJackson[0] << std::endl;
+    std::cout << seamuelLJackson[1] << std::endl;
+    std::cout << seamuelLJackson[2] << std::endl;
+    std::cout << seamuelLJackson[3] << std::endl;
+    std::cout << seamuelLJackson[4] << std::endl;
+    std::cout << seamuelLJackson[5] << std::endl;
+    std::cout << seamuelLJackson[6] << std::endl;
+    std::cout << seamuelLJackson[7] << std::endl;
+    std::cout << seamuelLJackson[8] << std::endl;
+    std::cout << seamuelLJackson[9] << std::endl;
+    std::cout << seamuelLJackson[10] << std::endl;
+
+    if(cbShowSeams->isChecked())
+    {
+        cv::Mat paintedSeams = originalImage.clone();
+        for(int seamColCoordinate = 0; seamColCoordinate < originalImage.cols; ++seamColCoordinate)
+        {
+            paintedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[0] = 255;
+            paintedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[1] = 0;
+            paintedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[2] = 0;
+
+        }
+        cv::namedWindow("Original WITH Seams", cv::WINDOW_KEEPRATIO);
+        cv::imshow("Original WITH Seams", paintedSeams);
+    }
+
+
+
 }
 
 void MainWindow::on_pbRemoveSeams_clicked()

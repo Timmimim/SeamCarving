@@ -154,7 +154,7 @@ cv::Mat EnergyFunctions::computeEnergy(const cv::Mat& grayscaleImage, const int 
                     // Further clamp result to the interval covered by uchar to prevent over-/underflow due to floating point arithmetic.
                     energyField.at<uchar>(row,col) = static_cast<uchar>(std::clamp(
                                                                         std::sqrt(horizontalDerivative*horizontalDerivative / 9
-                                                                                + verticalDerivative * verticalDerivative / 9 )   / std::sqrt(2.0),
+                                                                                + verticalDerivative * verticalDerivative / 9 )  / std::sqrt(2.0),
                                                                         0.0,
                                                                         static_cast<double>(std::numeric_limits<uchar>::max())));
 
