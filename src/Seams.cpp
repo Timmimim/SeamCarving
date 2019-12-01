@@ -6,7 +6,7 @@ Seams::Seams()
 
 }
 
-int* Seams::horizontalSeam(const cv::Mat& energyImage)
+std::vector<int> Seams::horizontalSeam(const cv::Mat& energyImage)
 {
     const int rows = energyImage.rows; // n
     const int cols = energyImage.cols; // m
@@ -37,8 +37,8 @@ int* Seams::horizontalSeam(const cv::Mat& energyImage)
     }
 
     //finde Seam mit minimaler Energy Summe (minimaler Wert in letzter Spalte j=m)
-    uint minEnergyCoordinate = 0;
-    uint currentMinimumEnegry = M[minEnergyCoordinate][cols-1];
+    int minEnergyCoordinate = 0;
+    int currentMinimumEnegry = M[minEnergyCoordinate][cols-1];
     for(int i=1; i<rows; i++)
     {
         if(M[i][cols-1] < currentMinimumEnegry)
@@ -50,12 +50,13 @@ int* Seams::horizontalSeam(const cv::Mat& energyImage)
 
     //init seam array(Index für Zugriff auf seam entspricht Spalte des Pixels, gespeicherter Wert dessen Reihe)
     //Information:
-    int* seam = new int[cols];
+    auto seam = std::vector<int>(static_cast<size_t>(energyImage.cols), 0);
     seam[cols-1] = minEnergyCoordinate;
 
-    //backtrack seam pixels in M
+    //backtrack seam pixels in M, comparing the three pixels bordering on the latest pixel in the track
     for(int j = cols-2; j >= 0; --j)
     {
+        // if seam already runs along left-side image border, only compare two values
         if (minEnergyCoordinate == 0)
         {
             if(M[minEnergyCoordinate][j+1] <= M[minEnergyCoordinate+1][j+1])
@@ -66,6 +67,7 @@ int* Seams::horizontalSeam(const cv::Mat& energyImage)
                 seam[j] = minEnergyCoordinate;
             }
         }
+        // if seam already runs along right-side image border, only compare two values
         else if(minEnergyCoordinate == rows-1)
         {
             if(M[minEnergyCoordinate][j+1] <= M[minEnergyCoordinate-1][j+1])
@@ -76,6 +78,7 @@ int* Seams::horizontalSeam(const cv::Mat& energyImage)
                 seam[j] = minEnergyCoordinate;
             }
         }
+        // if seam runs through the image without special cases to be regarded
         else
         {
             if(M[minEnergyCoordinate][j+1] <= M[minEnergyCoordinate-1][j+1] && M[minEnergyCoordinate][j+1] <= M[minEnergyCoordinate+1][j+1])
@@ -91,107 +94,96 @@ int* Seams::horizontalSeam(const cv::Mat& energyImage)
                 --minEnergyCoordinate;
                 seam[j] = minEnergyCoordinate;
         }
-
-
     }
     return seam;
  }
-        /**
-        //vorige Spalte, gleiche Reihe (Basiswahl)
-        std::cout << minEnergyCoordinate << std::endl;
-        seam[j] = minEnergyCoordinate;
-        currentMinimumEnegry = M[minEnergyCoordinate][j];
 
-        //vorige Spalte, eine Reihe hoch
-        //Indexrange beachten und Vergleich
-        if((minEnergyCoordinate-1 > -1) && (M[minEnergyCoordinate-1][j] < currentMinimumEnegry))
-        {
-            std::cout << minEnergyCoordinate+1 << std::endl;
-            seam[j] = minEnergyCoordinate-1;
-            currentMinimumEnegry = M[minEnergyCoordinate-1][j];
-        }
-
-        //vorige Spalte, eine Reihe runter
-        //Indexrange beachten und Vergleich
-        if((minEnergyCoordinate+1 < rows) && (M[minEnergyCoordinate+1][j] < currentMinimumEnegry))
-        {
-            std::cout << minEnergyCoordinate+1 << std::endl;
-            seam[j] = minEnergyCoordinate+1;
-            currentMinimumEnegry = M[minEnergyCoordinate+1][j];
-        }
-    }
-
-    return seam;
-}*/
-
-int* Seams::verticalSeam(const cv::Mat& energyImage)
+std::vector<int> Seams::verticalSeam(const cv::Mat& energyImage)
 {
-
-    const int n = energyImage.rows;
-    const int m = energyImage.cols;
+    const int rows = energyImage.rows; // n
+    const int cols = energyImage.cols; // m
     //init M[n x m] for dynamic programming
-    int M[n][m];
+    int M[rows][cols];
 
-    for(int j=0; j < m; j++)
+    for(int j=0; j < cols; ++j)
     {
-        M[0][j] = energyImage.at<int>(0,j);
+        M[0][j] = energyImage.at<uchar>(0,j);
     }
 
-    //Aufbau von M im Zuge dynmaischer Programmierung
+    //Aufbau von M im Zuge dynamischer Programmierung
     //Sonderfall am Rand von M, da j-1 < 0 bzw j+1 = m sein kann (index out of bounce stuff)
-    for(int i=1; i<n; i++)
+    for(int i=1; i < rows; ++i)
     {
         //Sonderfall j-1 zu klein
-        M[i][0] = energyImage.at<int>(i,0) +
+        M[i][0] = energyImage.at<uchar>(i,0) +
                 std::min(M[i-1][0],M[i-1][1]);
         //Standard (alle drei benachbarten Pixel in Reihe i-1 kommen in betracht)
-        for(int j=1; j<m-1; j++)
+        for(int j=1; j<cols-1; j++)
         {
-            M[i][j] = energyImage.at<int>(i,j) +
+            M[i][j] = energyImage.at<uchar>(i,j) +
                     std::min(M[i-1][j-1], std::min(M[i-1][j],M[i-1][j+1]));
         }
         //Sonderfall j+1 zu groß
-        M[i][m-1] = energyImage.at<int>(i,m-1) +
-                std::min(M[i-1][m-2],M[i-1][m-1]);
+        M[i][cols-1] = energyImage.at<uchar>(i,cols-1) +
+                std::min(M[i-1][cols-2],M[i-1][cols-1]);
     }
 
-    //finde seam mit minimaler energy Summe (minimaler Wert in letzter Reihe i=n)
-    int sj = 0;
-    int s = M[n-1][sj];
-    for(int j=1; j<m; j++)
+    //finde Seam mit minimaler Energy Summe (minimaler Wert in letzter Reihe i=n)
+    int minEnergyCoordinate = 0;
+    int currentMinimumEnegry = M[rows-1][minEnergyCoordinate];
+    for(int j=1; j<cols; j++)
     {
-        if(M[n-1][j] < s)
+        if(M[rows-1][j] < currentMinimumEnegry)
         {
-            s = M[n-1][j];
-            sj = j;
+            currentMinimumEnegry = M[rows-1][j];
+            minEnergyCoordinate = j;
         }
     }
 
     //init seam array(Index für Zugriff auf seam entspricht Reihe des Pixels, gespeicherter Wert dessen Spalte)
-    int seam[n];
-    seam[n-1] = sj;
+    auto seam = std::vector<int>(static_cast<size_t>(energyImage.rows), 0);
+    seam[rows-1] = minEnergyCoordinate;
 
-    //backtrack seam pixels in M
-    for(int i = n-2; i > -1; i--)
-    {
-        //vorige Reihe, gleiche Spalte (Basiswahl)
-        seam[i] = sj;
-        s = M[i][sj];
-
-        //vorige Reihe, eine Spalte nach links
-        //Indexrange beachten und Vergleich
-        if(sj-1 > -1 && M[i][sj-1] < s)
+    //backtrack seam pixels in M, comparing the three pixels bordering on the latest pixel in the track
+    for(int i = rows-2; i > -1; --i)
+    {        
+        // if seam already runs along left-side image border, only compare two values
+        if (minEnergyCoordinate == 0)
         {
-            seam[i] = sj-1;
-            s = M[i][sj-1];
+            if(M[i+1][minEnergyCoordinate] <= M[i+1][minEnergyCoordinate+1])
+                seam[i] = minEnergyCoordinate;
+            else
+            {
+                ++minEnergyCoordinate;
+                seam[i] = minEnergyCoordinate;
+            }
         }
-
-        //vorige Reihe, eine Spalte nach rechts
-        //Indexrange beachten und Vergleich
-        if(sj+1 < m && M[i][sj+1] < s)
+        // if seam already runs along right-side image border, only compare two values
+        else if(minEnergyCoordinate == cols-1)
         {
-            seam[i] = sj+1;
-            s = M[i][sj+1];
+            if(M[i+1][minEnergyCoordinate] <= M[i+1][minEnergyCoordinate-1])
+                seam[i] = minEnergyCoordinate;
+            else
+            {
+                --minEnergyCoordinate;
+                seam[i] = minEnergyCoordinate;
+            }
+        }
+        // if seam runs through the image without special cases to be regarded
+        else
+        {
+            if(M[i+1][minEnergyCoordinate] <= M[i+1][minEnergyCoordinate-1] && M[i+1][minEnergyCoordinate] <= M[i+1][minEnergyCoordinate+1])
+            {
+                seam[i] = minEnergyCoordinate;
+            }
+            else if (M[i+1][minEnergyCoordinate] < M[i+1][minEnergyCoordinate-1])
+            {
+                ++minEnergyCoordinate;
+                seam[i] = minEnergyCoordinate;
+            }
+            else
+                --minEnergyCoordinate;
+                seam[i] = minEnergyCoordinate;
         }
     }
 

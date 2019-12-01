@@ -77,8 +77,16 @@ private:
     
     /* Originalbild */
     cv::Mat         originalImage;
+
     /* Eventuell weitere Klassenattribute */
-    
+    cv::Mat         grayscaleImage;
+    cv::Mat         energyImage;
+    cv::Mat         origImageWithHighlightedSeams;
+    cv::Mat         carvedImage;
+
+    std::vector<std::vector<int>> horizontalSeams;
+    std::vector<std::vector<int>> verticalSeams;
+
     /* Methode initialisiert die UI */
     void setupUi();
     
