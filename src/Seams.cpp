@@ -91,8 +91,10 @@ std::vector<int> Seams::horizontalSeam(const cv::Mat& energyImage)
                 seam[j] = minEnergyCoordinate;
             }
             else
+            {
                 --minEnergyCoordinate;
                 seam[j] = minEnergyCoordinate;
+            }
         }
     }
     return seam;
@@ -182,10 +184,18 @@ std::vector<int> Seams::verticalSeam(const cv::Mat& energyImage)
                 seam[i] = minEnergyCoordinate;
             }
             else
+            {
                 --minEnergyCoordinate;
                 seam[i] = minEnergyCoordinate;
+            }
         }
     }
 
     return seam;
 }
+
+void Seams::resizeImage(cv::Mat& image, const int numRowsRemoved, const int numColsRemoved)
+{
+    image = image(cv::Range(0, image.rows-numRowsRemoved), cv::Range(0, image.cols-numColsRemoved));
+}
+

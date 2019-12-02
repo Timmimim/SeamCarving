@@ -59,54 +59,87 @@ void MainWindow::on_pbComputeSeams_clicked()
     /* Anzahl der Zeilen, die entfernt werden sollen */
     int rowsToRemove = sbRows->value();
 
+    // clear out previously calculated seams and reserve memory for new batch
     verticalSeams.clear();
     verticalSeams.reserve(static_cast<size_t>(colsToRemove));
     horizontalSeams.clear();
     horizontalSeams.reserve(static_cast<size_t>(rowsToRemove));
 
+    // build a grayscale-, and from it an energy-image, and display the latter
     grayscaleImage = EnergyFunctions::convertToGrayscale(originalImage);
     energyImage = EnergyFunctions::computeEnergy(grayscaleImage, comboChooseOperator->currentIndex());
     cv::namedWindow("Energy Image", cv::WINDOW_KEEPRATIO);
     cv::imshow("Energy Image", energyImage);
 
+    // create a clone of the original image to display the calculated seams in
     origImageWithHighlightedSeams = originalImage.clone();
 
+    // create as many vertical seams as columns are to be removed
     for(int verticalSeam = 0; verticalSeam < colsToRemove; ++verticalSeam)
     {
+        // re-calculate energy (must be done on every iteration, as the grayscale image is changed)
+        // this is done to prevent chosing the same seam multiple times (force new seam)
         energyImage = EnergyFunctions::computeEnergy(grayscaleImage, comboChooseOperator->currentIndex());
 
+        // calculate seam
         auto seamuelLJackson = Seams::verticalSeam(energyImage);
-        verticalSeams.push_back(seamuelLJackson);
+        // exclude the seam from the grayscale image, to not find it twice
+        Seams::excludeVerticalSeam<uchar>(grayscaleImage, seamuelLJackson);
 
-        Seams::removeVerticalSeam<uchar>(grayscaleImage, seamuelLJackson);
+        // shift seam, if previously found/removed seam had smaller coordinat
+        // (i.e. the new coordinate is too low for the actual position in the yet-untouched original image)
+        for(int seamRowCoordinate = 0; seamRowCoordinate < energyImage.rows; ++seamRowCoordinate)
+            for (int seam = verticalSeams.size()-2; seam >= 0; --seam) {
+                if(verticalSeams[static_cast<size_t>(seam)][static_cast<size_t>(seamRowCoordinate)] <= seamuelLJackson[static_cast<size_t>(seamRowCoordinate)])
+                    ++seamuelLJackson[static_cast<size_t>(seamRowCoordinate)];
+            }
+
+        verticalSeams.push_back(seamuelLJackson);
 
         if(cbShowSeams->isChecked())
         {
             for(int seamRowCoordinate = 0; seamRowCoordinate < energyImage.rows; ++seamRowCoordinate)
             {
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[0] = 0;
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[1] = 0;
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[2] = 255;
+                if(origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[0] == 255)
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[2] += 255;
+                else
+                {
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[0] = 0;
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[1] = 0;
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamRowCoordinate, seamuelLJackson[seamRowCoordinate])[2] = 255;
+                }
             }
         }
     }
 
+    grayscaleImage = EnergyFunctions::convertToGrayscale(originalImage);
     for(int horizontalSeam = 0; horizontalSeam < rowsToRemove; ++horizontalSeam)
     {
         energyImage = EnergyFunctions::computeEnergy(grayscaleImage, comboChooseOperator->currentIndex());
 
         auto seamuelLJackson = Seams::horizontalSeam(energyImage);
+
+        Seams::excludeHorizontalSeam<uchar>(grayscaleImage, seamuelLJackson);
         horizontalSeams.push_back(seamuelLJackson);
 
-        Seams::removeHorizontalSeam<uchar>(grayscaleImage, seamuelLJackson);
+        for(int seamColCoordinate = 0; seamColCoordinate < energyImage.cols; ++seamColCoordinate)
+            for (int seam = static_cast<int>(horizontalSeams.size()-2); seam >= 0; --seam) {
+                if(horizontalSeams[static_cast<size_t>(seam)][static_cast<size_t>(seamColCoordinate)] <= seamuelLJackson[static_cast<size_t>(seamColCoordinate)])
+                    ++seamuelLJackson[static_cast<size_t>(seamColCoordinate)];
+            }
 
         if(cbShowSeams->isChecked())
         {
             for(int seamColCoordinate = 0; seamColCoordinate < energyImage.cols; ++seamColCoordinate)
             {
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[0] = 255;
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[1] = 0;
-                origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[2] = 0;
+                if(origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[2] == 255)
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[0] += 255;
+                else
+                {
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[0] = 255;
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[1] = 0;
+                    origImageWithHighlightedSeams.at<cv::Vec<uchar, 3>>(seamuelLJackson[seamColCoordinate], seamColCoordinate)[2] = 0;
+                }
             }
         }
     }
@@ -117,6 +150,10 @@ void MainWindow::on_pbComputeSeams_clicked()
         cv::imshow("Original WITH Seams", origImageWithHighlightedSeams);
     }
     pbRemoveSeams->setEnabled(true);
+    if(onlySeamsInOneDimensionCalculated)
+        pbDoubleSeams->setEnabled(true);
+    else
+        pbDoubleSeams->setEnabled(false);
 }
 
 void MainWindow::on_pbRemoveSeams_clicked()
@@ -124,14 +161,15 @@ void MainWindow::on_pbRemoveSeams_clicked()
     carvedImage = originalImage.clone();
 
     for(const auto& seam : verticalSeams)
-        Seams::removeVerticalSeam<cv::Vec<uchar, 3>>(carvedImage, seam);
-
-    verticalSeams.clear();
+        Seams::removeVerticalSeam<cv::Vec<uchar, 3>>(carvedImage, seam);    
 
     for(const auto& seam : horizontalSeams)
         Seams::removeHorizontalSeam<cv::Vec<uchar, 3>>(carvedImage, seam);
 
-    horizontalSeams.clear();
+    Seams::resizeImage(carvedImage, horizontalSeams.size(), verticalSeams.size());
+
+    //verticalSeams.clear();
+    //horizontalSeams.clear();
 
     cv::namedWindow("Carved Image", cv::WINDOW_KEEPRATIO);
     cv::imshow("Carved Image", carvedImage);
@@ -139,7 +177,28 @@ void MainWindow::on_pbRemoveSeams_clicked()
 
 void MainWindow::on_pbDoubleSeams_clicked()
 {
-    /* .............. */
+    extendedImage = originalImage.clone();
+
+    for (const auto& seam : verticalSeams)
+    {
+        auto extensionCol = cv::Mat::zeros(extendedImage.rows, 1, 16);
+        //extendedImage = extendedImage(cv::Range(0, extendedImage.rows), cv::Range(0, extendedImage.cols+1));
+        cv::hconcat(extendedImage, extensionCol, extendedImage);
+        Seams::duplicateVerticalSeam<cv::Vec<uchar, 3>>(extendedImage, seam);
+    }
+
+    for(const auto& seam : horizontalSeams)
+    {
+        auto extensionRow = cv::Mat::zeros(1, extendedImage.cols, 16);
+        //extendedImage = extendedImage(cv::Range(0, extendedImage.rows+1), cv::Range(0, extendedImage.cols));
+        extendedImage.push_back(extensionRow);
+        //cv::vconcat(extendedImage, extensionRow, extendedImage);  // not working, causes error after second addition...
+        Seams::duplicateHorizontalSeam<cv::Vec<uchar, 3>>(extendedImage, seam);
+    }
+
+    cv::namedWindow("Extended Image", cv::WINDOW_KEEPRATIO);
+    cv::imshow("Extended Image", extendedImage);
+
 }
 
 void MainWindow::setupUi()
@@ -230,6 +289,24 @@ void MainWindow::setupUi()
     connect(pbOpenImage,    &QPushButton::clicked, this, &MainWindow::on_pbOpenImage_clicked);  
     connect(pbComputeSeams, &QPushButton::clicked, this, &MainWindow::on_pbComputeSeams_clicked); 
     connect(pbRemoveSeams,  &QPushButton::clicked, this, &MainWindow::on_pbRemoveSeams_clicked);
+    connect(pbDoubleSeams,  &QPushButton::clicked, this, &MainWindow::on_pbDoubleSeams_clicked);
+
+    connect(sbCols, QOverload<int>::of(&QSpinBox::valueChanged),
+        [=](int i)
+    {
+        if(i == 0)
+            onlySeamsInOneDimensionCalculated = true;
+        else if(sbRows->value() != 0)
+            onlySeamsInOneDimensionCalculated = false;
+    });
+    connect(sbRows, QOverload<int>::of(&QSpinBox::valueChanged),
+        [=](int i)
+    {
+        if(i == 0)
+            onlySeamsInOneDimensionCalculated = true;
+        else if(sbCols->value() != 0)
+            onlySeamsInOneDimensionCalculated = false;
+    });
 }
 
 void MainWindow::enableGUI()

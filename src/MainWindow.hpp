@@ -83,9 +83,12 @@ private:
     cv::Mat         energyImage;
     cv::Mat         origImageWithHighlightedSeams;
     cv::Mat         carvedImage;
+    cv::Mat         extendedImage;
 
     std::vector<std::vector<int>> horizontalSeams;
     std::vector<std::vector<int>> verticalSeams;
+
+    bool onlySeamsInOneDimensionCalculated = false;
 
     /* Methode initialisiert die UI */
     void setupUi();
