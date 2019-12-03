@@ -91,9 +91,9 @@ public:
             if((col % 2) == 0)
                 black = !black;
             if(black)
-                image.at<T>(image.rows-1, col) = 1000;
+                image.at<T>(image.rows-1, col) = 0;
             else
-                image.at<T>(image.rows-1, col) = 700;
+                image.at<T>(image.rows-1, col) = 255;
         }
     }
 
